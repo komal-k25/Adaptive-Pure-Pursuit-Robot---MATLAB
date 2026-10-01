@@ -1,0 +1,52 @@
+function speed = adaptiveSpeed(x_track, y_track, nearestIdx, minSpeed, maxSpeed)
+% ADAPTIVESPEED Calculates robot speed based on path curvature.
+%
+% Inputs:
+% x_track, y_track -> reference path
+% nearestIdx       -> nearest point to robot
+% minSpeed         -> minimum robot speed
+% maxSpeed         -> maximum robot speed
+%
+% Output:
+% speed            -> adaptive robot speed
+
+    N = length(x_track);
+
+    % Select three nearby points
+    idx1 = max(nearestIdx - 2, 1);
+    idx2 = nearestIdx;
+    idx3 = min(nearestIdx + 2, N);
+
+    x1 = x_track(idx1);
+    y1 = y_track(idx1);
+
+    x2 = x_track(idx2);
+    y2 = y_track(idx2);
+
+    x3 = x_track(idx3);
+    y3 = y_track(idx3);
+
+    % Calculate distances between points
+    a = hypot(x2 - x1, y2 - y1);
+    b = hypot(x3 - x2, y3 - y2);
+    c = hypot(x3 - x1, y3 - y1);
+
+    % Calculate curvature
+    areaValue = abs((x2-x1)*(y3-y1) - (y2-y1)*(x3-x1));
+
+    if a*b*c == 0
+        curvature = 0;
+    else
+        curvature = 2 * areaValue / (a*b*c);
+    end
+
+    % Curvature sensitivity
+    curvatureGain = 200;
+
+    % Reduce speed when curvature increases
+    speed = maxSpeed / (1 + curvatureGain * curvature);
+
+    % Keep speed within limits
+    speed = max(minSpeed, min(speed, maxSpeed));
+
+end
