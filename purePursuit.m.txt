@@ -1,0 +1,49 @@
+function [newTheta, headingError, targetX, targetY, nearestIdx] = ...
+    purePursuit(x, y, theta, x_track, y_track, lookAhead, Kp, isClosed)
+
+% PUREPURSUIT Pure Pursuit steering controller
+%
+% Inputs:
+% x, y       -> current robot position
+% theta      -> current robot heading
+% x_track    -> reference path X coordinates
+% y_track    -> reference path Y coordinates
+% lookAhead  -> number of path points to look ahead
+% Kp         -> steering gain
+% isClosed   -> true for circular path, false otherwise
+%
+% Outputs:
+% newTheta   -> updated robot heading
+% headingError -> difference between desired and current heading
+% targetX/Y   -> selected look-ahead target point
+% nearestIdx -> nearest point on the path
+
+    % Find the nearest point on the path
+    distance = (x_track - x).^2 + (y_track - y).^2;
+    [~, nearestIdx] = min(distance);
+
+    % Number of path points
+    N = length(x_track);
+
+    % Select look-ahead point
+    if isClosed
+        targetIdx = mod(nearestIdx - 1 + lookAhead, N) + 1;
+    else
+        targetIdx = min(nearestIdx + lookAhead, N);
+    end
+
+    targetX = x_track(targetIdx);
+    targetY = y_track(targetIdx);
+
+    % Desired direction toward target
+    desiredTheta = atan2(targetY - y, targetX - x);
+
+    % Calculate heading error
+    headingError = atan2( ...
+        sin(desiredTheta - theta), ...
+        cos(desiredTheta - theta));
+
+    % Update robot heading
+    newTheta = theta + Kp * headingError;
+
+end
