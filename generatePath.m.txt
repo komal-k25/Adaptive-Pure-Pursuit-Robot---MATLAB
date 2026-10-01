@@ -1,0 +1,76 @@
+function [x_track, y_track] = generatePath(pathType)
+%GENERATEPATH Generate different reference paths for the robot.
+%
+% Input:
+%   pathType - path selected by the user
+%
+% Output:
+%   x_track  - X coordinates of reference path
+%   y_track  - Y coordinates of reference path
+
+    % Number of points in the path
+    N = 600;
+
+    % Create X coordinates
+    x = linspace(0, 600, N);
+
+    % Select path
+    switch lower(string(pathType))
+
+        % ---------------------------------------------------------
+        % 1. STRAIGHT PATH
+        % ---------------------------------------------------------
+        case "straight"
+
+            x_track = x;
+            y_track = 200 * ones(size(x));
+
+
+        % ---------------------------------------------------------
+        % 2. CIRCULAR PATH
+        % ---------------------------------------------------------
+        case "circle"
+
+            % Circle parameters
+            centerX = 300;
+            centerY = 200;
+            radius = 100;
+
+            % Angle values
+            theta = linspace(0, 2*pi, N);
+
+            % Circle equation
+            x_track = centerX + radius*cos(theta);
+            y_track = centerY + radius*sin(theta);
+
+
+        % ---------------------------------------------------------
+        % 3. SINUSOIDAL PATH
+        % ---------------------------------------------------------
+        case "sinosoidal"
+
+            x_track = x;
+            y_track = 200 + 80*sin(0.01*x);
+
+
+        % ---------------------------------------------------------
+        % 4. S-SHAPED PATH
+        % ---------------------------------------------------------
+        case "s-shaped"
+
+            x_track = x;
+
+            % Two opposite bends create an S-shaped path
+            y_track = 200 + 100*sin(2*pi*x/600);
+
+
+        % ---------------------------------------------------------
+        % INVALID PATH
+        % ---------------------------------------------------------
+        otherwise
+
+            error('Invalid path type. Use: straight, circle, sinosoidal, or s-shaped.');
+
+    end
+
+end
