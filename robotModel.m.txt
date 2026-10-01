@@ -1,0 +1,16 @@
+function [newX, newY] = robotModel(x, y, theta, speed, dt)
+% ROBOTMODEL Updates the robot position.
+%
+% Inputs:
+% x, y   -> current robot position
+% theta  -> robot heading angle
+% speed  -> robot speed
+% dt     -> simulation time step
+%
+% Outputs:
+% newX, newY -> updated robot position
+
+    newX = x + speed * cos(theta) * dt;
+    newY = y + speed * sin(theta) * dt;
+
+end
